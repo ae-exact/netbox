@@ -20,12 +20,12 @@ If a recent enough version of PostgreSQL is not available through your distribut
 
 #### CentOS
 
-CentOS 7 does not ship with a recent enough version of PostgreSQL, so it will need to be installed from an external repository. The instructions below show the installation of PostgreSQL 9.6, however you may opt to install a more recent version.
+CentOS 7 does not ship with a recent enough version of PostgreSQL, so it will need to be installed from an external repository. The instructions below show the installation of PostgreSQL 10(similar to ansible tower and be compatible to rh_postgresql10 version for awx), however you may opt to install a more recent version.
 
 ```no-highlight
 # yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-# yum install -y postgresql96 postgresql96-server postgresql96-devel
-# /usr/pgsql-9.6/bin/postgresql96-setup initdb
+# yum install -y postgresql10 postgresql10-server postgresql10-devel
+# /usr/pgsql-10/bin/postgresql10-setup initdb
 ```
 
 CentOS users should modify the PostgreSQL configuration to accept password-based authentication by replacing `ident` with `md5` for all host entries within `/var/lib/pgsql/9.6/data/pg_hba.conf`. For example:
@@ -35,11 +35,11 @@ host    all             all             127.0.0.1/32            md5
 host    all             all             ::1/128                 md5
 ```
 
-Then, start the service and enable it to run at boot:
+Then, start the service and enable it to run at boot(not required if rh_postgresql10 installed with ansible tower already):
 
 ```no-highlight
-# systemctl start postgresql-9.6
-# systemctl enable postgresql-9.6
+# systemctl start postgresql-10
+# systemctl enable postgresql-10
 ```
 
 ## Database Creation
@@ -78,3 +78,17 @@ netbox=> \q
 ```
 
 If successful, you will enter a `netbox` prompt. Type `\q` to exit.
+
+## Backup and restore
+
+You can a simple PostgreSQL dump will do it. For example:
+
+```no-highlight
+# sudo -u postgres pg_dump netbox > netbox.sql
+```
+
+To restore the data to an empty database:
+
+```no-highlight
+# sudo -u postgres psql netbox < netbox.sql
+```
